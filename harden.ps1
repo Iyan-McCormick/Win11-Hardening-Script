@@ -1,3 +1,9 @@
+# Check for Administrator privileges and relaunch as admin if needed
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Restarting script as Administrator..."
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    exit
+}
 # Define menu options
 $menuOptions = @(
     "Document the system"
@@ -10,25 +16,7 @@ $menuOptions = @(
         Write-Host "`n--- Starting: Enable updates ---`n"
     }
     "User Auditing"
-    # Loop through every local user account and prompt for authorization
-$localUsers = Get-LocalUser | Where-Object { $_.Name -ne "Administrator" -and $_.Name -ne "DefaultAccount" -and $_.Name -ne "Guest" }
-foreach ($user in $localUsers) {
-    $prompt = "Is '$($user.Name)' an Authorized User? (Y/n): "
-    $answer = Read-Host -Prompt $prompt
-    if ($answer -eq "" -or $answer -match "^[Yy]$") {
-        Write-Host "'$($user.Name)' kept."
-    } elseif ($answer -match "^[Nn]$") {
-        try {
-            Remove-LocalUser -Name $user.Name -ErrorAction Stop
-            Write-Host "'$($user.Name)' deleted."
-        } catch {
-            Write-Host "Failed to delete '$($user.Name)': $_"
-        }
-    } else {
-        Write-Host "Invalid input. '$($user.Name)' kept."
-    }
-}
-    function User-Auditing {
+      function User-Auditing {
         Write-Host "`n--- Starting: User Auditing ---`n"
     }
     # Menu loop
@@ -55,4 +43,3 @@ Write-Host "Hostname: $env:COMPUTERNAME"
 # Display the Windows version
 Write-Host "Windows Version:" 
 Get-ComputerInfo | Select-Object -Property WindowsProductName, WindowsVersion, OsHardwareAbstractionLayer
-
