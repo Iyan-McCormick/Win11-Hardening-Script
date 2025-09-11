@@ -36,7 +36,11 @@ $menuOptions = @(
         }
     }
 }
-    "Admin Auditing"
+     "Account Policies"
+         function Account-Policies {
+        Write-Host "`n--- Starting: Account Policies ---`n"
+    }  
+     "Admin Auditing"
          function Admin-Auditing {
         Write-Host "`n--- Starting: Administrator Group Auditing ---`n"
         $adminGroup = Get-LocalGroupMember -Group "Administrators"
@@ -57,6 +61,7 @@ $menuOptions = @(
             }
         }
     }
+    
     # Menu loop
     :menu do {
         Write-Host "`nSelect an option:`n"
@@ -70,8 +75,9 @@ $menuOptions = @(
             "1" { Document-System }
             "2" { Enable-Updates }
             "3" { User-Auditing }
-            "4" {Admin-Auditing} 
-            "5" { Write-Host "`nExiting..."; break menu }  # leave the do{} loop
+            "4" { Account-Policies } 
+            "5" { Admin-Auditing}
+            "6" { Write-Host "`nExiting..."; break menu }  # leave the do{} loop
             default { Write-Host "`nInvalid selection. Please try again." }
         }
     } while ($true)
